@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: employee-deployment
+  namespace: employee
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: employee-pod
+  template:
+    metadata:
+      labels:
+        app: employee-pod
+    spec:
+      containers:
+      - name: employee-pod
+        image: yaronzlotolov/employees:v1
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        env:
+        - name: ConnectionStrings__ConnectionString
+          valueFrom:
+              secretKeyRef:
+                name: mssql-secret
+                key: ConnectionString
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: employee-service
+  namespace: employee
+spec:
+  selector:
+    app: employee-pod
+  ports:
+  - port: 8080
+    targetPort: 80
+  type: LoadBalancer
+
+
