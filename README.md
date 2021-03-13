@@ -4,6 +4,6 @@ Ubuntu 20.04 TLS distros, Docker-Desktop,
 .Net core 3.1, Entity Framework Core, Visual Studio Code
 and Git.
 
-The example contains kuberneties components like deployments,
+The example contains kubernetes components like deployments,
 pods, services, replicaset, secrets, persistent volume, ingress and
 prometheus. Instructions are located in Documents folder.
