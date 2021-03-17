@@ -1,0 +1,33 @@
+*** Clean up kuberneties name sapce, docker images and containers and login to docker hub ***
+docker system prune -a
+docker login
+docker images
+kubectl delete ns employee
+
+*** check the web application ***
+cd Employees
+dotnet build 
+dotnet run
+localhost:5000  (check the web app is runnig - need to update connection string in environment variables)
+commit and push to git 
+
+*** Create docker image and apply it in k8s ***
+cd Kubernetes-Docker-Desktop
+docker build -t employeemanagement:v1 .  
+rem docker images | more  (see employeemanagement:v1 )
+rem update deployment-ingress.yml with employeemanagement:v1
+rem cd C:\project\EmployeesManagement\manifests
+rem kubectl apply -f deployment-ingress.yml
+rem kubectl get ns
+rem kubectl get all -n employee
+rem http://yaron.zlotolov.com/
+
+rem STEP4 - push the image to docker hub and apply on k8s
+rem docker tag employeemanagement:v1 yaronzlot/employeemanagement:v1
+rem docker images  (see yaronzlot/employeemanagement:v1 )
+rem docker push yaronzlot/employeemanagement:v1
+rem update deployment-ingress.yml with yaronzlot/employeemanagement:v1
+rem cd C:\project\EmployeesManagement\manifests
+rem kubectl apply -f deployment-ingress.yml
+rem kubectl get all -n employee
+rem http://yaron.zlotolov.com/

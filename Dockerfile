@@ -4,10 +4,10 @@ EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["Kuberneties-Docker-Desktop/Employees/Employees.csproj", "Kuberneties-Docker-Desktop/Employees/"]
-RUN dotnet restore "Kuberneties-Docker-Desktop/Employees/Employees.csproj"
+COPY ["Employees/Employees.csproj", "Employees/"]
+RUN dotnet restore "Employees/Employees.csproj"
 COPY . .
-WORKDIR "/src/Kuberneties-Docker-Desktop/Employees"
+WORKDIR "/src/Employees"
 RUN dotnet build "Employees.csproj" -c Release -o /app/build
 
 FROM build AS publish
