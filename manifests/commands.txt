@@ -2,7 +2,7 @@
 kubectl create ns employee
 kubectl get ns
 
-*** connection string and sa password secrets to MSSQL ***
+*** create connection string and sa password secrets to MSSQL ***
 kubectl create secret generic mssql-secret --namespace=employee --from-literal='ConnectionString="server=mssql-service;Initial Catalog=EmployeeDB;Persist Security Info=False;User ID=sa;Password=MyDemoPwd2021!;MultipleActiveResultSets=true"' --from-literal='SA_PASSWORD=MyDemoPwd2021!'
 kubectl get secret mssql-secret -n employee -oyaml
 kubectl describe secret mssql-secret -n employee
@@ -17,11 +17,11 @@ kubectl -n employee exec -it mssql-deployment-6bcb97764c-m675k  -- /bin/sh
 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT @@SERVERNAME,@@VERSION" -P "MyDemoPwd2021!" -W
 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT Physical_Name FROM sys.master_files" -P "MyDemoPwd2021!" -W
 
-*** create EMPLOYEEDB using ef core - the connection string is located in environment variables ***
+*** create EMPLOYEEDB using ef core  (the connection string is located in environment variables) ***
 cd employee
 dotnet ef database update
 
-*** connect to MSSQL pod and check EMPLOYEEDB database table list,list of employees, list of updates/migrations ***
+*** connect to MSSQL pod and check EMPLOYEEDB database, table list, employee list, list of updates/migrations ***
 kubectl -n employee exec -it mssql-deployment-6bcb97764c-m675k  -- /bin/sh
 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT Physical_Name FROM sys.master_files" -P "MyDemoPwd2021!" -W
 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT * FROM EmployeeDB.INFORMATION_SCHEMA.TABLES" -P "MyDemoPwd2021!" -W
@@ -30,7 +30,7 @@ kubectl -n employee exec -it mssql-deployment-6bcb97764c-m675k  -- /bin/sh
 
 *** add database migration with new employee and update the database ***
 ModelBuilderExtentions.cs - add employee
-dotnet ef migrations add galmekel
+dotnet ef migrations add <migration name>
 dotnet ef migrations remove   (remove last migration)
 dotnet ef database update
 after applying to database need to remove the employee from ModelBuilderExtentions.cs and create new migration
@@ -50,13 +50,7 @@ kubectl create secret tls employee-secret --key privkey.pem --cert cert.pem -n e
 kubectl get secret employee-secret -n employee -oyaml
 kubectl describe secret employee-secret -n employee
 
-*** TLS/SSL certification secret for employee web site in inngress-nginx
-cd certification
-kubectl create secret tls employee-secret --key privkey.pem --cert cert.pem -n employee
-kubectl get secret employee-secret -n employee -oyaml
-kubectl describe secret employee-secret -n employee
-
-*** deploy netcore we application with ingress-nginx ***
+*** deploy netcore web application with ingress-nginx ***
 kubectl apply -f .\netcore-deploy-with-ingress-nginx.yml
 kubectl get all -n employee
 kubectl get ing -n employee
