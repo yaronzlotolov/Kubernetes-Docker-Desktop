@@ -6,4 +6,4 @@ and Git.
 
 The example contains kubernetes components like deployments,
 pods, services, replicaset, secrets, persistent volume, ingress and
-prometheus. Instructions are located in Documents folder.
+prometheus. Instructions are located in Documents folder in the code.
