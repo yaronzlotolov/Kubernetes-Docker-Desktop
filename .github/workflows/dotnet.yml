@@ -29,7 +29,7 @@ jobs:
     - uses: mr-smithers-excellent/docker-build-push@v5
       name: Build & push Docker image
       with:
-        image: yaronzlotolov/employeemanagement 
+        image: yaronzlotolov/employees 
         tags: v3
         registry: registry-url.io
         dockerfile: Dockerfile
