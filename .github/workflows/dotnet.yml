@@ -29,9 +29,6 @@ jobs:
     - uses: mr-smithers-excellent/docker-build-push@v5
       name: Build & push Docker image
       with:
-        image: yaronzlotolov/employees 
-        tags: v2
-        registry: docker.io
-        dockerfile: Dockerfile
+        image: yaronzlotolov/employees
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
