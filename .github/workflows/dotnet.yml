@@ -30,5 +30,6 @@ jobs:
       name: Build & push Docker image
       with:
         image: yaronzlotolov/employees
+        registry: docker.io
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
