@@ -30,7 +30,7 @@ jobs:
       name: Build & push Docker image
       with:
         image: yaronzlotolov/employees 
-        tags: v3
+        tags: v2
         registry: docker.io
         dockerfile: Dockerfile
         username: ${{ secrets.DOCKER_USERNAME }}
