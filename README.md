@@ -6,5 +6,5 @@ and Git.
 
 The example contains kubernetes components like deployments,
 pods, services, replicaset, secrets, persistent volume, ingress and
-prometheus. The process build and push docker image to DockerHub. 
+prometheus. The process creates a build and pushes a docker image to DockerHub using github actions. 
 Instructions are located in Documents folder in the code.
