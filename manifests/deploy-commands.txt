@@ -3,6 +3,7 @@ kubectl create ns employee
 kubectl get ns
 
 *** create connection string and sa password secrets to MSSQL ***
+cd manifest
 kubectl create secret generic mssql-secret --namespace=employee --from-literal='ConnectionString="server=mssql-service;Initial Catalog=EmployeeDB;Persist Security Info=False;User ID=sa;Password=MyDemoPwd2021!;MultipleActiveResultSets=true"' --from-literal='SA_PASSWORD=MyDemoPwd2021!'
 kubectl get secret mssql-secret -n employee -oyaml
 kubectl describe secret mssql-secret -n employee
@@ -16,33 +17,41 @@ kubectl get pv -n employee
 kubectl -n employee exec -it mssql-deployment-6bcb97764c-m675k  -- /bin/sh
 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT @@SERVERNAME,@@VERSION" -P "MyDemoPwd2021!" -W
 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT Physical_Name FROM sys.master_files" -P "MyDemoPwd2021!" -W
+exit
 
-*** create EMPLOYEEDB using ef core  (the connection string is located in environment variables) ***
+*** create EMPLOYEEDB using dotnet ef core  ***
+Option1 - appsettings.json -> ConnectionString -> "server=localhost;Initial Catalog=EmployeeDB;Persist Security Info=False;User ID=sa;Password=MyDemoPwd2021!;MultipleActiveResultSets=true"
+Option2 - Add to environment variable: Variable name:  ConnectionStrings__ConnectionString  Variable value: server=localhost,1433;Initial Catalog=EmployeeDB;Persist Security Info=False;User ID=sa;Password=MyDemoPwd2021!;MultipleActiveResultSets=true
 cd employee
 dotnet ef database update
+dotnet build
+dotnet run
+http://localhost:5000/     (check the web application works with SQL server in K8s)
 
-*** connect to MSSQL pod and check EMPLOYEEDB database, table list, employee list, list of updates/migrations ***
+
+*** Step for learning - connect to MSSQL pod and check EMPLOYEEDB database, table list, employee list, list of updates/migrations ***
 kubectl -n employee exec -it mssql-deployment-6bcb97764c-m675k  -- /bin/sh
 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT Physical_Name FROM sys.master_files" -P "MyDemoPwd2021!" -W
 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT * FROM EmployeeDB.INFORMATION_SCHEMA.TABLES" -P "MyDemoPwd2021!" -W
 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT * FROM EmployeeDB.dbo.Employees" -P "MyDemoPwd2021!" -W
 /opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT * FROM EmployeeDB.dbo.__EFMigrationsHistory" -P "MyDemoPwd2021!" -W
 
-*** add database migration with new employee and update the database ***
+*** Step for learning - add database migration with new employee and update the database ***
 ModelBuilderExtentions.cs - add employee
 dotnet ef migrations add <migration name>
 dotnet ef migrations remove   (remove last migration)
 dotnet ef database update
 after applying to database need to remove the employee from ModelBuilderExtentions.cs and create new migration
 
-*** connect to docker-desktop node and check the persistent volume binding to mssql pod with EMPLOYEEDB ***
+*** Step for learning - connect to docker-desktop node and check the persistent volume binding to mssql pod with EMPLOYEEDB ***
 docker run -it --rm --privileged --pid=host justincormack/nsenter1
 cd /var/lib/k8s-pvs/vol-claim
 ls
 cd pvc-1a247447-48eb-46c3-ad7f-add854c1151f
 cd data
 ls -ltr(see the database files are the same as in mssqlpod)
-
+date (if more than one pv)
+exit
 
 *** TLS/SSL certification secret for employee web site in inngress-nginx
 cd certification
@@ -51,11 +60,15 @@ kubectl get secret employee-secret -n employee -oyaml
 kubectl describe secret employee-secret -n employee
 
 *** deploy netcore web application with ingress-nginx ***
+cd manifest
+update yaronzlotolov/employees:v3 image/tag in netcore-deploy-with-ingress-nginx.yml -  https://hub.docker.com/repository/docker/yaronzlotolov/employees
+kubectl apply -f .\ingress-nginx-deployment.yml
 kubectl apply -f .\netcore-deploy-with-ingress-nginx.yml
 kubectl get all -n employee
 kubectl get ing -n employee
 kubectl describe ing -n employee
 kubectl describe service -n employee
+https://employee.management.com/
 
 
 *** monitoring - install Chocolaty for kubernetes helm repo for prometheus-operator *** 
