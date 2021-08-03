@@ -1,9 +1,10 @@
-# Deploy .NET Core Web application with MSSQL to Kubernetes Cluster using Docker Desktop Step by Step
+# Deploy .NET 5.0 Web application with MSSQL to Kubernetes Cluster using Docker Desktop for Windows 10.
 The deployment requires Windows 10 latest version, WSL v2,
 Ubuntu 20.04 TLS distros, Docker-Desktop,
-.Net core 3.1, Entity Framework Core, Visual Studio Code
+.Net 5.0, Entity Framework Core, Visual Studio Code
 and Git.
 
 The example contains kubernetes components like deployments,
 pods, services, replicaset, secrets, persistent volume, ingress and
-prometheus. Instructions are located in Documents folder.
+prometheus. This example uses CI/CD that creates a docker image and pushes it to DockerHub using github actions. 
+Instructions are located in Documents folder in the code.
