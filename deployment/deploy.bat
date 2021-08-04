@@ -21,7 +21,8 @@ kubectl get secret mssql-secret -n employee -oyaml
 pause
 
 
-rem *** deploy MSSQl with secret and persistent volume ***
+rem *** deploy MSSQl with secret and persistent volume (take few minutes on the first time)***
+
 kubectl apply -f .\mssql-deploy-with-secret-and-pv.yml
 pause
 kubectl get pods -n employee
@@ -35,13 +36,27 @@ rem ConnectionStrings__ConnectionString -> server=localhost,1433;Initial Catalog
 cd C:\Project\Kubernetes-Docker-Desktop\Employees
 dotnet ef database update
 pause
-dotnet vuild
+dotnet build
 pause
 dotnet run
 pause
 http://localhost:5000/
 pause
 
+rem *** Create docker image and push it to docker hub ***
+cd C:\Kubernetes\Kubernetes-Docker-Desktop
+docker build -t employees:v5 .  
+pause
+docker images | more
+pause
+docker tag employees:v5 yaronzlotolov/employees:v5
+pause
+docker images | more
+pause
+docker push yaronzlotolov/employees:v5
+pause
+https://hub.docker.com/repository/docker/yaronzlotolov/employees
+pause
 
 rem *** TLS/SSL certification secret for employee web site in inngress-nginx
 cd C:\Project\Kubernetes-Docker-Desktop\certification
@@ -52,16 +67,41 @@ pause
 kubectl describe secret employee-secret -n employee
 pause
 
+
 rem ** deploy netcore web application with ingress-nginx ***
 cd C:\Project\Kubernetes-Docker-Desktop\Deployment
 pause
 kubectl apply -f .\ingress-nginx-deployment.yml
 pause
-kubectl apply -f .\netcore-deploy-with-ingress-nginx.yml
+rem check netcore-deploy-with-ingress-nginx.yml -> yaronzlotolov/employees:v5
+pause
+kubectl apply -f .\netcore-deploy-with-ingress-nginx.yml 
 pause
 kubectl get all -n employee
 pause
+rem in case of problem restart VScode
+kubectl delete -f .\netcore-deploy-with-ingress-nginx.yml
+pause
+kubectl get all -n employee
+rem set netcore-deploy-with-ingress-nginx.yml -> employees:v5
+rem Run: kubectl describe pod/employee-deployment-59db54f94c-gkgj4 -n employee
+pause
+kubectl apply -f .\netcore-deploy-with-ingress-nginx.yml 
+pause
+kubectl get all -n employee
+pause
+rem C:\Windows\System32\drivers\etc\hosts > 127.0.0.1 employee.management.com
+rem employee.management.com
+
 
 rem *** monitoring - install Chocolaty for kubernetes helm repo for prometheus-operator *** 
+helm repo update
+pause
 helm install prometheus stable/prometheus-operator
+pause
 kubectl apply -f .\prometheus-ingress-controller.yml
+pause
+rem C:\Windows\System32\drivers\etc\hosts > 127.0.0.1 prometheus.gui.com 
+https://prometheus.gui.com/
+user:admin
+password: prom-operator

@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: employee-pod
-        image: yaronzlotolov/employees:v3
+        image: yaronzlotolov/employees:v5
         resources:
           limits:
             memory: "128Mi"
