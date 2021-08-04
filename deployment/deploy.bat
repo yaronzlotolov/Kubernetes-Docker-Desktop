@@ -102,6 +102,6 @@ pause
 kubectl apply -f .\prometheus-ingress-controller.yml
 pause
 rem C:\Windows\System32\drivers\etc\hosts > 127.0.0.1 prometheus.gui.com 
-https://prometheus.gui.com/
-user:admin
-password: prom-operator
+rem https://prometheus.gui.com/
+rem user:admin
+rem password: prom-operator
