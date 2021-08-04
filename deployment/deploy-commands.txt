@@ -1,0 +1,98 @@
+*** create employee namespace ***
+kubectl create ns employee
+kubectl get ns
+
+*** create connection string and sa password secrets to MSSQL ***
+cd manifest
+kubectl create secret generic mssql-secret --namespace=employee --from-literal='ConnectionString="server=mssql-service;Initial Catalog=EmployeeDB;Persist Security Info=False;User ID=sa;Password=MyDemoPwd2021!;MultipleActiveResultSets=true"' --from-literal='SA_PASSWORD=MyDemoPwd2021!'
+kubectl get secret mssql-secret -n employee -oyaml
+kubectl describe secret mssql-secret -n employee
+
+*** deploy MSSQl with secret and persistent volume ***
+kubectl apply -f .\mssql-deploy-with-secret-and-pv.yml
+kubectl get all -n employee
+kubectl get pv -n employee
+
+*** connect to MSSQL pod and check the version and the defualt databases ***
+kubectl -n employee exec -it mssql-deployment-6bcb97764c-m675k  -- /bin/sh
+/opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT @@SERVERNAME,@@VERSION" -P "MyDemoPwd2021!" -W
+/opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT Physical_Name FROM sys.master_files" -P "MyDemoPwd2021!" -W
+exit
+
+*** create EMPLOYEEDB using dotnet ef core  ***
+Option1 - appsettings.json -> ConnectionString -> "server=localhost;Initial Catalog=EmployeeDB;Persist Security Info=False;User ID=sa;Password=MyDemoPwd2021!;MultipleActiveResultSets=true"
+Option2 - Add to environment variable: Variable name:  ConnectionStrings__ConnectionString  Variable value: server=localhost,1433;Initial Catalog=EmployeeDB;Persist Security Info=False;User ID=sa;Password=MyDemoPwd2021!;MultipleActiveResultSets=true
+cd employee
+dotnet ef database update
+dotnet build
+dotnet run
+http://localhost:5000/     (check the web application works with SQL server in K8s)
+
+
+*** Step for learning - connect to MSSQL pod and check EMPLOYEEDB database, table list, employee list, list of updates/migrations ***
+kubectl -n employee exec -it mssql-deployment-6bcb97764c-m675k  -- /bin/sh
+/opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT Physical_Name FROM sys.master_files" -P "MyDemoPwd2021!" -W
+/opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT * FROM EmployeeDB.INFORMATION_SCHEMA.TABLES" -P "MyDemoPwd2021!" -W
+/opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT * FROM EmployeeDB.dbo.Employees" -P "MyDemoPwd2021!" -W
+/opt/mssql-tools/bin/sqlcmd -S localhost,1433 -U sa -Q "SELECT * FROM EmployeeDB.dbo.__EFMigrationsHistory" -P "MyDemoPwd2021!" -W
+
+*** Step for learning - add database migration with new employee and update the database ***
+ModelBuilderExtentions.cs - add employee
+dotnet ef migrations add <migration name>
+dotnet ef migrations remove   (remove last migration)
+dotnet ef database update
+after applying to database need to remove the employee from ModelBuilderExtentions.cs and create new migration
+
+*** Step for learning - connect to docker-desktop node and check the persistent volume binding to mssql pod with EMPLOYEEDB ***
+docker run -it --rm --privileged --pid=host justincormack/nsenter1
+cd /var/lib/k8s-pvs/vol-claim
+ls
+cd pvc-1a247447-48eb-46c3-ad7f-add854c1151f
+cd data
+ls -ltr(see the database files are the same as in mssqlpod)
+date (if more than one pv)
+exit
+
+*** TLS/SSL certification secret for employee web site in inngress-nginx
+cd certification
+kubectl create secret tls employee-secret --key privkey.pem --cert cert.pem -n employee
+kubectl get secret employee-secret -n employee -oyaml
+kubectl describe secret employee-secret -n employee
+
+*** deploy netcore web application with ingress-nginx ***
+cd manifest
+update yaronzlotolov/employees:v3 image/tag in netcore-deploy-with-ingress-nginx.yml -  https://hub.docker.com/repository/docker/yaronzlotolov/employees
+kubectl apply -f .\ingress-nginx-deployment.yml
+kubectl apply -f .\netcore-deploy-with-ingress-nginx.yml
+kubectl get all -n employee
+kubectl get ing -n employee
+kubectl describe ing -n employee
+kubectl describe service -n employee
+<<<<<<< HEAD
+kubectl get deployment employee-deployment -n employee -oyaml
+=======
+https://employee.management.com/
+>>>>>>> 86adbabe76133c66787d2c3bc9b7299dd5601880
+
+
+*** monitoring - install Chocolaty for kubernetes helm repo for prometheus-operator *** 
+Set-ExecutionPolicy Bypass
+ps Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+Remove-Item C:\ProgramData\chocolatey –Recurse
+ps Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+choco
+choco install kubernetes-helm
+helm repo add stable https://charts.helm.sh/stable
+helm repo update
+helm install prometheus stable/prometheus-operator
+kubectl get all
+kubectl --namespace default get pods -l "release=prometheus"
+kubectl get pods
+kubectl get service prometheus-prometheus-oper-prometheus -o yaml
+cd .\manifests\
+kubectl apply -f .\prometheus-ingress-controller.yml
+add prometheus.gui.com to hosts in C:\Windows\System32\drivers\etc
+https://prometheus.gui.com/
+user:admin
+password: prom-operator
+
