@@ -6,5 +6,5 @@ and Git.
 
 The example contains kubernetes components like deployments,
 pods, services, replicaset, secrets, persistent volume, ingress and
-prometheus. This example uses CI/CD that creates a docker image and pushes it to DockerHub using github actions. The CD is controlled by ArgoCD as Gippsland.
+prometheus. This example runs CI that creates a docker image and pushes it to DockerHub using github actions. The CD is controlled by ArgoCD as Gippsland.
 Instructions are located in Documents folder in the code.
