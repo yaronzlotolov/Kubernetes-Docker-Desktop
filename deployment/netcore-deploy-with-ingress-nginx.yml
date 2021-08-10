@@ -17,6 +17,18 @@ spec:
       containers:
       - name: employee-pod
         image: yaronzlotolov/employees:v5
+        livenessProbe:
+            httpGet:
+              path: /employee
+              port: 80
+            initialDelaySeconds: 1
+            periodSeconds: 1
+        readinessProbe:
+            httpGet:
+              path: /employee
+              port: 80
+            initialDelaySeconds: 1
+            periodSeconds: 1
         resources:
           requests:
             memory: "64Mi"
