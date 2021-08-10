@@ -1,7 +1,7 @@
 rem *** Clean up kuberneties name sapce, docker images and containers and login to docker hub ***
 rem docker system prune -a
 rem kubectl delete ns employee
-rem resore to factory defualts
+rem resore to factory defualts from Troubleshoot icon in deocker desktop
 
 rem *** the mnifest are here ***
 cd C:\Project\Kubernetes-Docker-Desktop\Deployment
@@ -32,7 +32,7 @@ pause
 
 
 rem *** create EMPLOYEEDB using dotnet ef core (make sure the connection string is updated in Employees\appsettings.json or in Environmet Variables for User)  ***
-rem ConnectionStrings__ConnectionString -> server=localhost,1433;Initial Catalog=EmployeeDB;Persist Security Info=False;User ID=sa;Password=MyDemoPwd2021!!;MultipleActiveResultSets=true
+rem ConnectionStrings__ConnectionString -> server=localhost,1433;Initial Catalog=EmployeeDB;Persist Security Info=False;User ID=sa;Password=MyDemoPwd2021!;MultipleActiveResultSets=true
 cd C:\Project\Kubernetes-Docker-Desktop\Employees
 dotnet ef database update
 pause
@@ -75,7 +75,10 @@ kubectl apply -f .\ingress-nginx-deployment.yml
 pause
 rem check netcore-deploy-with-ingress-nginx.yml -> yaronzlotolov/employees:v5
 pause
+cd C:\Kubernetes\Kubernetes-Docker-Desktop\deployment
+rem Do NOT cd C:\Kubernetes\Kubernetes-Docker-Desktop\Deployment!!!!!!
 kubectl apply -f .\netcore-deploy-with-ingress-nginx.yml 
+rem sleep 60 sec
 pause
 kubectl get all -n employee
 pause
@@ -83,9 +86,13 @@ rem in case of problem restart VScode
 kubectl delete -f .\netcore-deploy-with-ingress-nginx.yml
 pause
 kubectl get all -n employee
+pause
+rem kubectl -n employee get deploy employee-deployment -oyaml
 rem set netcore-deploy-with-ingress-nginx.yml -> employees:v5
+rem docker pull yaronzlotolov/employees:v5
 rem Run: kubectl describe pod/employee-deployment-59db54f94c-gkgj4 -n employee
 pause
+cd C:\Kubernetes\Kubernetes-Docker-Desktop\deployment
 kubectl apply -f .\netcore-deploy-with-ingress-nginx.yml 
 pause
 kubectl get all -n employee

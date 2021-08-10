@@ -7,7 +7,7 @@ rem *** instal datree ***
 curl https://get.datree.io | /bin/bash
 
 rem *** check datree installed and check policy of k8s-demo.yaml ***
-datree etst ~/.datree/k8s-demo.yaml
+datree test ~/.datree/k8s-demo.yaml
 
 rem see all datree rules in policy - need to authorize with github
 https://app.datree.io/login?cliId=6oaFgDR6bYqmM8XytYnKFM
@@ -23,5 +23,5 @@ readinessProbe: -->  livenessProbe: (add a properly configured livenessProbe to 
 
 
 rem *** check again datree policy on k8s-demo.yaml ***
-datree etst ~/.datree/k8s-demo.yaml
+datree test ~/.datree/k8s-demo.yaml
 
