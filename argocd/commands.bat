@@ -51,6 +51,8 @@ password: admin
 
 
 rem *** creare new app from command ***
+kubectl config view  ( get k8s server url)
+
 .\argocd.exe app create employee-app --repo https://github.com/yaronzlotolov/Kubernetes-Docker-Desktop.git --path deplyment --dest-server https://kubernetes.defualts.svc --dest-namespace default
 
 
