@@ -343,3 +343,7 @@ healthchecksdb
 .terraform/
 terraform.lock.hcl
 terraform.tfstate
+
+#txt
+cn.txt
+pass.txt
