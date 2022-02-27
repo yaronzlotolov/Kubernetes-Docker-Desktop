@@ -1,0 +1,113 @@
+**** snyc cli installation on windows*****
+
+Using msi installation:
+https://docs.snyk.io/snyk-cli/install-the-snyk-cli
+
+Using npm:
+https://docs.snyk.io/snyk-cli/getting-started-with-the-cli
+install node.js - https://nodejs.org/en/download/
+npm install -g snyk
+
+Using Scoop:
+Set-ExecutionPolicy RemoteSigned -scope CurrentUser
+Invoke-Expression (New-Object System.Net.WebClient).DownloadString('https://get.scoop.sh')
+scoop bucket add snyk https://github.com/snyk/scoop-snyk
+scoop install snyk
+
+*** authorization ***
+snyk auth
+
+******test .NET5 code for vulnerability ******
+cd \Employees
+snyk test
+
+results:
+Tested 98 dependencies for known issues, found 1 issue, 8 vulnerable paths.
+
+
+Issues with no direct upgrade or patch:
+  ✗ Regular Expression Denial of Service (ReDoS) [High Severity][https://snyk.io/vuln/SNYK-DOTNET-SYSTEMTEXTREGULAREXPRESSIONS-174708] in System.Text.RegularExpressions@4.3.0
+    introduced by Microsoft.EntityFrameworkCore.SqlServer@3.1.5 > Microsoft.Data.SqlClient@1.0.19269.1 > Microsoft.Identity.Client@3.0.8 > System.Xml.XDocument@4.3.0 > System.Xml.ReaderWriter@4.3.0 > System.Text.RegularExpressions@4.3.0 and 7 other path(s)
+  This issue was fixed in versions: 4.3.1
+
+**** monitor .NET5 code for vulnerability*****
+snyk monitor
+Monitoring C:\kuberneties\Kubernetes-Docker-Desktop\Employees (Employees)...
+
+
+**** test docker images ****
+docker images
+snyk container test mcr.microsoft.com/mssql/server
+
+Organization:      yaron.zlotolov
+Package manager:   deb
+Project name:      docker-image|mcr.microsoft.com/mssql/server
+Docker image:      mcr.microsoft.com/mssql/server
+Platform:          linux/amd64
+Base image:        ubuntu:20.04
+Licenses:          enabled
+
+Tested 182 dependencies for known issues, found 59 issues.
+
+Base Image    Vulnerabilities  Severity
+ubuntu:20.04  28               0 critical, 0 high, 5 medium, 23 low
+
+Recommendations for base image upgrade:
+
+Major upgrades
+Base Image              Vulnerabilities  Severity
+ubuntu:impish-20220128  19               0 critical, 0 high, 5 medium, 14 low
+
+
+snyk container test <repository>:<tag> --file=Dockerfile
+
+docker pull yaronzlotolov/employees:v5
+cd C:\kuberneties\Kubernetes-Docker-Desktop
+snyk container test yaronzlotolov/employees:v5 --file=Dockerfile
+
+Organization:      yaron.zlotolov
+Package manager:   deb
+Target file:       Dockerfile
+Project name:      docker-image|yaronzlotolov/employees
+Docker image:      yaronzlotolov/employees:v5
+Platform:          linux/amd64
+Base image:        mcr.microsoft.com/dotnet/aspnet:5.0
+Licenses:          enabled
+
+Tested 94 dependencies for known issues, found 77 issues.
+
+Currently, we only offer base image recommendations for Official Docker images
+
+Pro tip: use `--exclude-base-image-vulns` to exclude from display Docker base image vulnerabilities.
+
+To remove this message in the future, please run `snyk config set disableSuggestions=true`
+
+Learn more: https://docs.snyk.io/products/snyk-container/getting-around-the-snyk-container-ui/base-image-detection
+
+
+
+****Test but exclude base images ******
+snyk container test yaronzlotolov/employees:v5 --file=Dockerfile --exclude-base-image-vulns
+
+
+Testing yaronzlotolov/employees:v5...
+
+Organization:      yaron.zlotolov
+Package manager:   deb
+Target file:       Dockerfile
+Project name:      docker-image|yaronzlotolov/employees
+Docker image:      yaronzlotolov/employees:v5
+Platform:          linux/amd64
+Base image:        mcr.microsoft.com/dotnet/aspnet:5.0
+Licenses:          enabled
+
+✔ Tested 94 dependencies for known issues, no vulnerable paths found.
+
+Currently, we only offer base image recommendations for Official Docker images
+
+
+
+
+
+
+
