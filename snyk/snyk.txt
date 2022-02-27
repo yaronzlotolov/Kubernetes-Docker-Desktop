@@ -1,4 +1,4 @@
-**** snyc cli installation on windows*****
+**** snyc cli tool installation on windows*****
 
 Using msi installation:
 https://docs.snyk.io/snyk-cli/install-the-snyk-cli
