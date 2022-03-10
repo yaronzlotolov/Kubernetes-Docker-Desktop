@@ -37,5 +37,6 @@ steps:
   inputs:
     serviceConnectionEndpoint: 'Snyk'
     testType: 'app'
+    targetFile: '$(solution)'
     monitorWhen: 'always'
     failOnIssues: true
