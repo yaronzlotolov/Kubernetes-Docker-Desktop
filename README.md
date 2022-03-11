@@ -7,5 +7,5 @@ and Git.
 The example contains kubernetes components like deployments,
 pods, services, replicaset, secrets, persistent volume, ingress and
 prometheus. This example runs CI that creates a docker image and pushes it to DockerHub using github actions.
-The CD is controlled by argocd gitops.
+The CD is controlled by argocd gitops.datree is used for k8s best practice and snyk to scan vulnerability in code and images.
 Instructions are located in Documents folder in the code.
